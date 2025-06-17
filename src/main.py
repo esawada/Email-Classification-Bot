@@ -1,5 +1,5 @@
-from email_bot.config import EMAIL_USER, LOG_LEVEL
-from email_bot.email_reader import check_inbox_and_process_emails
+from config import EMAIL_USER, LOG_LEVEL
+from email_reader import check_inbox_and_process_emails
 from loguru import logger
 import schedule
 import time
