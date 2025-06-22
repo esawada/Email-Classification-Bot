@@ -5,7 +5,7 @@ import email
 from email.header import decode_header
 from config import EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD
 from classifier import classify_email
-# from qr_decoder import process_attachments_for_qr
+from qr_decoder import process_attachments_for_qr
 from database import save_email_record
 from loguru import logger
 
