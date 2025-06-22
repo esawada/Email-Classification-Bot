@@ -1,42 +1,122 @@
 # email_bot/database.py
 
-from sqlalchemy import create_engine, Column, String, Integer, Text, DateTime, JSON
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from config import DB_URL
-from datetime import datetime
+import mysql.connector
+from mysql.connector import Error
+from loguru import logger
+import os
 
-Base = declarative_base()
-engine = create_engine(DB_URL)
-Session = sessionmaker(bind=engine)
+# Read DB credentials from environment or fallback values
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "email_classifier")
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASS = os.getenv("DB_PASS", "")
 
-class EmailRecord(Base):
-    __tablename__ = "emails"
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS
+        )
+        return connection
+    except Error as e:
+        logger.error(f"MySQL connection error: {e}")
+        return None
 
-    id = Column(Integer, primary_key=True)
-    subject = Column(Text)
-    sender = Column(String(256))
-    date = Column(String(128))
-    body = Column(Text)
-    category = Column(String(64))
-    keyword = Column(String(64))
-    qr_data = Column(JSON)
-    received_at = Column(DateTime, default=datetime.utcnow)
+def initialize_database():
+    conn = get_db_connection()
+    if not conn:
+        return
 
-def save_email_record(email_data, category, keyword, qr_data):
-    session = Session()
-    record = EmailRecord(
-        subject=email_data["subject"],
-        sender=email_data["from"],
-        date=email_data["date"],
-        body=email_data["body"],
-        category=category,
-        keyword=keyword,
-        qr_data=qr_data
-    )
-    session.add(record)
-    session.commit()
-    session.close()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS classified_emails (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            subject VARCHAR(255),
+            sender VARCHAR(255),
+            content TEXT,
+            classification VARCHAR(50),
+            keyword VARCHAR(100),
+            received_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-def init_db():
-    Base.metadata.create_all(engine)
+def save_classified_email(subject, sender, content, classification, keyword):
+    conn = get_db_connection()
+    if not conn:
+        return
+
+    cursor = conn.cursor()
+    query = """
+        INSERT INTO classified_emails (subject, sender, content, classification, keyword)
+        VALUES (%s, %s, %s, %s, %s);
+    """
+    cursor.execute(query, (subject, sender, content, classification, keyword))
+    conn.commit()
+    cursor.close()
+    conn.close()
+# email_bot/database.py
+
+import mysql.connector
+from mysql.connector import Error
+from loguru import logger
+import os
+
+# Read DB credentials from environment or fallback values
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "email_classifier")
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASS = os.getenv("DB_PASS", "")
+
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS
+        )
+        return connection
+    except Error as e:
+        logger.error(f"MySQL connection error: {e}")
+        return None
+
+def initialize_database():
+    conn = get_db_connection()
+    if not conn:
+        return
+
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS classified_emails (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            subject VARCHAR(255),
+            sender VARCHAR(255),
+            content TEXT,
+            classification VARCHAR(50),
+            keyword VARCHAR(100),
+            received_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def save_classified_email(subject, sender, content, classification, keyword):
+    conn = get_db_connection()
+    if not conn:
+        return
+
+    cursor = conn.cursor()
+    query = """
+        INSERT INTO classified_emails (subject, sender, content, classification, keyword)
+        VALUES (%s, %s, %s, %s, %s);
+    """
+    cursor.execute(query, (subject, sender, content, classification, keyword))
+    conn.commit()
+    cursor.close()
+    conn.close()
