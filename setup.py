@@ -22,6 +22,7 @@ setup(
         'schedule',
         'loguru',
         'pytest',
+        "mysql-connector-python",
         'flask',           # Optional: for dashboard
         'spacy',           # Optional: for advanced NLP
         'gunicorn',        # Optional: if deploying Flask
