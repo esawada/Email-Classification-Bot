@@ -58,7 +58,8 @@ def initialize_database():
                 body TEXT,
                 classification VARCHAR(50),
                 keyword VARCHAR(100),
-                qr_data JSON
+                qr_data JSON,
+                boleto_data VARCHAR(255)
             );
         """)
         conn.commit()
@@ -68,7 +69,7 @@ def initialize_database():
     except Error as e:
         logger.error(f"MySQL setup error: {e}")
         
-def save_email_record(email_data, classification, keyword, qr_data = None):
+def save_email_record(email_data, classification, keyword, qr_data = None, boleto_data = None):
     conn = get_db_connection()
     if not conn:
         return
@@ -84,10 +85,10 @@ def save_email_record(email_data, classification, keyword, qr_data = None):
 
     query = """
         INSERT INTO classified_emails (
-            subject, sender, date, body, classification, keyword, qr_data
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s);
+            subject, sender, date, body, classification, keyword, qr_data, boleto_data
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """
-    cursor.execute(query, (email_data["subject"], email_data["sender"], mysql_datetime, email_data["body"], classification, keyword, qr_data_json))
+    cursor.execute(query, (email_data["subject"], email_data["sender"], mysql_datetime, email_data["body"], classification, keyword, qr_data_json, boleto_data))
     conn.commit()
     cursor.close()
     conn.close()

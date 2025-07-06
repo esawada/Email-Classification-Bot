@@ -5,7 +5,7 @@ import email
 import os
 from email.header import decode_header
 from classifier import classify_email
-from qr_decoder import process_attachments_for_qr
+from decoder import process_attachments
 from database import save_email_record
 from loguru import logger
 
@@ -38,11 +38,11 @@ def check_inbox_and_process_emails():
             msg = email.message_from_bytes(data[0][1])
             email_data = parse_email(msg)
 
-            classification, keyword = classify_email(email_data)
-            qr_data = process_attachments_for_qr(msg)
+            qr_data, boleto_data = process_attachments(msg)
+            classification, keyword = classify_email(email_data, qr_data, boleto_data)
 
-            if qr_data or keyword:
-                save_email_record(email_data, classification, keyword, qr_data)
+            if qr_data or boleto_data or keyword:
+                save_email_record(email_data, classification, keyword, qr_data, boleto_data)
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
             else:
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread

@@ -13,8 +13,9 @@ setup(
         'beautifulsoup4',
         'python-dotenv',
         'sqlalchemy',
-        'psycopg2-binary',  # PostgreSQL driver
+        'psycopg2-binary',  
         'pyzbar',
+        'pytesseract',      
         'opencv-python',
         'pdf2image',
         'Pillow',
