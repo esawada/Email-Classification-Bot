@@ -3,9 +3,12 @@ from email_reader import check_inbox_and_process_emails
 from database import initialize_database
 from loguru import logger
 import schedule
+import os
 import time
 
 def main():
+    CHECK_INTERVAL_MINUTES = os.getenv("CHECK_INTERVAL_MINUTES", 5)
+
     logger.remove()
     logger.add(lambda msg: print(msg, end=""), level=LOG_LEVEL)
 
@@ -13,7 +16,8 @@ def main():
     initialize_database()
 
     # Schedule the job
-    schedule.every().second.do(check_inbox_and_process_emails)
+    check_inbox_and_process_emails()  # Initial run
+    schedule.every(int(CHECK_INTERVAL_MINUTES)).minutes.do(check_inbox_and_process_emails)
 
     logger.info("Scheduler started. Waiting for jobs...")
     while True:

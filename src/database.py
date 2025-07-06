@@ -93,3 +93,5 @@ def save_email_record(email_data, classification, keyword, qr_data = None, bolet
     conn.commit()
     cursor.close()
     conn.close()
+    logger.info(f"Email saved: {email_data['subject']} classified as {classification}.")
+

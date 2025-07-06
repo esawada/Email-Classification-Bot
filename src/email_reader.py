@@ -22,6 +22,7 @@ def check_inbox_and_process_emails():
         mail.select("inbox")
 
         status, messages = mail.search(None, 'UNSEEN')
+        # status, messages = mail.search(None, 'ALL') # Uncomment if you want to process all emails, not just unread ones
         if status != 'OK':
             logger.error("Failed to search emails.")
             return
@@ -48,7 +49,7 @@ def check_inbox_and_process_emails():
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
 
             list_emails.pop()
-            break
+            # break
 
 def parse_email(msg):
     subject = decode_mime_words(msg.get("Subject", ""))

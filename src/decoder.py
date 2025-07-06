@@ -1,7 +1,6 @@
 import os
 import re
 import tempfile
-# import pytesseract
 from email import message
 from PIL import Image
 from pdf2image import convert_from_bytes
