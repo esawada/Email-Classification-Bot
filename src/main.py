@@ -11,7 +11,7 @@ def main():
     logger.info(f"Starting Email Bot for {EMAIL_USER}")
 
     # Schedule the job
-    schedule.every().minutes.do(check_inbox_and_process_emails)
+    schedule.every().second.do(check_inbox_and_process_emails)
 
     logger.info("Scheduler started. Waiting for jobs...")
     while True:
