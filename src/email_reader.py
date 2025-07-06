@@ -42,8 +42,8 @@ def check_inbox_and_process_emails():
             classification, keyword = classify_email(email_data, qr_data, boleto_data)
 
             if qr_data or boleto_data or keyword:
-                save_email_record(email_data, classification, keyword, qr_data, boleto_data)
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
+                save_email_record(email_data, classification, keyword, qr_data, boleto_data)
             else:
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
 

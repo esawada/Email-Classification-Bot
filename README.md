@@ -193,3 +193,33 @@ Set up notifications via email or Slack for critical failures.
 
 4. Final Documentation & README (3h)
 Include tech stack, usage, architecture diagram, limitations.
+
+ --------------------------------------------------------------------------------------------------------
+
+ #Possible errors (the ones i got)
+
+ - Dll dependency missing
+  libzbar-64.dll requires MSVCR120.dll to load.
+  If this DLL is missing, Windows cannot load libzbar-64.dll, and you get the error in Python.
+  
+  Solution: Download and Install the Visual C++ 2013 Redistributable (x64):
+
+  Go to the official Microsoft page:
+  https://www.microsoft.com/en-us/download/details.aspx?id=40784
+
+  - Authentication failed while trying to login with IMAP
+  Google blocks "less secure apps" by default, so now Gmail requires an App Password for IMAP access, even if you don’t have 2FA, for most accounts.
+  Solution: Enable 2FA and use a App Password ganerated in your google account management area
+  
+  - Poppler download missing
+  Solution: Install Poppler for Windows
+
+  Download the latest Poppler binary from 
+  https://github.com/oschwartz10612/poppler-windows/releases/
+  Extract the zip file to a folder, e.g., C:\poppler.
+
+  Add Poppler to your PATH:
+  Open Windows "Environment Variables".
+  Edit the PATH variable and add the path to the bin folder inside your Poppler directory, e.g., C:\poppler\bin.
+
+

@@ -59,7 +59,7 @@ def initialize_database():
                 classification VARCHAR(50),
                 keyword VARCHAR(100),
                 qr_data JSON,
-                boleto_data VARCHAR(255)
+                boleto_data JSON
             );
         """)
         conn.commit()
@@ -78,6 +78,7 @@ def save_email_record(email_data, classification, keyword, qr_data = None, bolet
     
     # Convert QR data (list of dicts) to JSON string for storage
     qr_data_json = json.dumps(qr_data, ensure_ascii=False)
+    boleto_data_json = json.dumps(boleto_data, ensure_ascii=False)
 
     # Parse the date string to a datetime object
     dt = parsedate_to_datetime(email_data["date"])
@@ -88,7 +89,7 @@ def save_email_record(email_data, classification, keyword, qr_data = None, bolet
             subject, sender, date, body, classification, keyword, qr_data, boleto_data
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """
-    cursor.execute(query, (email_data["subject"], email_data["sender"], mysql_datetime, email_data["body"], classification, keyword, qr_data_json, boleto_data))
+    cursor.execute(query, (email_data["subject"], email_data["sender"], mysql_datetime, email_data["body"], classification, keyword, qr_data_json, boleto_data_json))
     conn.commit()
     cursor.close()
     conn.close()

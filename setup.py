@@ -15,7 +15,6 @@ setup(
         'sqlalchemy',
         'psycopg2-binary',  
         'pyzbar',
-        'pytesseract',      
         'opencv-python',
         'pdf2image',
         'Pillow',
