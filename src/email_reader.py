@@ -2,12 +2,17 @@
 
 import imaplib
 import email
+import os
 from email.header import decode_header
-from config import EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD
 from classifier import classify_email
 from qr_decoder import process_attachments_for_qr
 from database import save_email_record
 from loguru import logger
+
+EMAIL_HOST = os.getenv("EMAIL_HOST", "imap.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 993))
+EMAIL_USER = os.getenv("EMAIL_USER", "")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
 
 def check_inbox_and_process_emails():
     logger.info("Checking inbox...")
@@ -38,6 +43,7 @@ def check_inbox_and_process_emails():
 
             if qr_data or keyword:
                 save_email_record(email_data, classification, keyword, qr_data)
+                mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
             else:
                 mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
 
@@ -52,7 +58,7 @@ def parse_email(msg):
 
     return {
         "subject": subject,
-        "from": sender,
+        "sender": sender,
         "date": date,
         "body": body
     }

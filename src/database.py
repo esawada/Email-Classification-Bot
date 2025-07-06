@@ -3,6 +3,7 @@
 import mysql.connector
 from mysql.connector import Error
 from loguru import logger
+from email.utils import parsedate_to_datetime
 import json
 import os
 
@@ -53,11 +54,11 @@ def initialize_database():
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 subject VARCHAR(255),
                 sender VARCHAR(255),
-                content TEXT,
+                date DATETIME,
+                body TEXT,
                 classification VARCHAR(50),
                 keyword VARCHAR(100),
-                qr_data JSON,
-                received_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                qr_data JSON
             );
         """)
         conn.commit()
@@ -67,7 +68,7 @@ def initialize_database():
     except Error as e:
         logger.error(f"MySQL setup error: {e}")
         
-def save_email_record(subject, sender, content, classification, keyword, qr_data = None):
+def save_email_record(email_data, classification, keyword, qr_data = None):
     conn = get_db_connection()
     if not conn:
         return
@@ -77,12 +78,16 @@ def save_email_record(subject, sender, content, classification, keyword, qr_data
     # Convert QR data (list of dicts) to JSON string for storage
     qr_data_json = json.dumps(qr_data, ensure_ascii=False)
 
+    # Parse the date string to a datetime object
+    dt = parsedate_to_datetime(email_data["date"])
+    mysql_datetime = dt.strftime("%Y-%m-%d %H:%M:%S")
+
     query = """
         INSERT INTO classified_emails (
-            subject, sender, content, classification, keyword, qr_data
-        ) VALUES (%s, %s, %s, %s, %s, %s);
+            subject, sender, date, body, classification, keyword, qr_data
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s);
     """
-    cursor.execute(query, (subject, sender, content, classification, keyword, qr_data_json))
+    cursor.execute(query, (email_data["subject"], email_data["sender"], mysql_datetime, email_data["body"], classification, keyword, qr_data_json))
     conn.commit()
     cursor.close()
     conn.close()

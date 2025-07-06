@@ -1,5 +1,6 @@
 from config import EMAIL_USER, LOG_LEVEL
 from email_reader import check_inbox_and_process_emails
+from database import initialize_database
 from loguru import logger
 import schedule
 import time
@@ -9,6 +10,7 @@ def main():
     logger.add(lambda msg: print(msg, end=""), level=LOG_LEVEL)
 
     logger.info(f"Starting Email Bot for {EMAIL_USER}")
+    initialize_database()
 
     # Schedule the job
     schedule.every().second.do(check_inbox_and_process_emails)
