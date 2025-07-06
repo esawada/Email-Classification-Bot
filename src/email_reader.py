@@ -21,21 +21,28 @@ def check_inbox_and_process_emails():
             logger.error("Failed to search emails.")
             return
 
-        for num in messages[0].split():
-            status, data = mail.fetch(num, "(RFC822)")
+        list_emails = messages[0].split()
+
+        while list_emails:
+            latest_email_id = list_emails[-1] # Get the most recent email ID
+            status, data = mail.fetch(latest_email_id, "(RFC822)")
             if status != 'OK':
-                logger.warning(f"Could not fetch message {num}")
+                logger.warning(f"Could not fetch message {latest_email_id}")
                 continue
 
             msg = email.message_from_bytes(data[0][1])
             email_data = parse_email(msg)
 
-            # Run classifier and QR detection
             classification, keyword = classify_email(email_data)
             qr_data = process_attachments_for_qr(msg)
 
-            # Save all to database
-            save_email_record(email_data, classification, keyword, qr_data)
+            if qr_data or keyword:
+                save_email_record(email_data, classification, keyword, qr_data)
+            else:
+                mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
+
+            list_emails.pop()
+            break
 
 def parse_email(msg):
     subject = decode_mime_words(msg.get("Subject", ""))

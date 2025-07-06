@@ -67,7 +67,7 @@ def initialize_database():
     except Error as e:
         logger.error(f"MySQL setup error: {e}")
         
-def save_email_record(subject, sender, content, classification, keyword, qr_data):
+def save_email_record(subject, sender, content, classification, keyword, qr_data = None):
     conn = get_db_connection()
     if not conn:
         return
