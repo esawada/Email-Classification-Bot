@@ -1,18 +1,17 @@
-from config import EMAIL_USER, LOG_LEVEL
+from loguru import logger
+from config import EMAIL_USERNAME, CHECK_INTERVAL_MINUTES
 from email_reader import check_inbox_and_process_emails
 from database import initialize_database
-from loguru import logger
 import schedule
 import os
 import time
 
 def main():
-    CHECK_INTERVAL_MINUTES = os.getenv("CHECK_INTERVAL_MINUTES", 5)
 
     logger.remove()
-    logger.add(lambda msg: print(msg, end=""), level=LOG_LEVEL)
+    logger.add(lambda msg: print(msg, end=""), level="INFO")
 
-    logger.info(f"Starting Email Bot for {EMAIL_USER}")
+    logger.info(f"Starting Email Bot for {EMAIL_USERNAME}...")
     initialize_database()
 
     # Schedule the job

@@ -2,27 +2,26 @@
 
 import imaplib
 import email
-import os
+from config import EMAIL_HOST, EMAIL_PORT, EMAIL_USERNAME, EMAIL_PASSWORD, MARK_EMAILS_AS_READED, CHECK_SEEN_EMAILS
 from email.header import decode_header
 from classifier import classify_email
 from decoder import process_attachments
 from database import save_email_record
 from loguru import logger
 
-EMAIL_HOST = os.getenv("EMAIL_HOST", "imap.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 993))
-EMAIL_USER = os.getenv("EMAIL_USER", "")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
+
 
 def check_inbox_and_process_emails():
     logger.info("Checking inbox...")
 
     with imaplib.IMAP4_SSL(EMAIL_HOST, EMAIL_PORT) as mail:
-        mail.login(EMAIL_USER, EMAIL_PASSWORD)
+        mail.login(EMAIL_USERNAME, EMAIL_PASSWORD)
         mail.select("inbox")
 
-        status, messages = mail.search(None, 'UNSEEN')
-        # status, messages = mail.search(None, 'ALL') # Uncomment if you want to process all emails, not just unread ones
+        if CHECK_SEEN_EMAILS:
+            status, messages = mail.search(None, 'ALL')
+        else:
+            status, messages = mail.search(None, 'UNSEEN')
         if status != 'OK':
             logger.error("Failed to search emails.")
             return
@@ -40,13 +39,13 @@ def check_inbox_and_process_emails():
             email_data = parse_email(msg)
 
             qr_data, boleto_data = process_attachments(msg)
-            classification, keyword = classify_email(email_data, qr_data, boleto_data)
+            keyword = classify_email(email_data, qr_data, boleto_data)
 
             if qr_data or boleto_data or keyword:
-                mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
-                save_email_record(email_data, classification, keyword, qr_data, boleto_data)
+                if not MARK_EMAILS_AS_READED: mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
+                save_email_record(email_data, keyword, qr_data, boleto_data)
             else:
-                mail.store(latest_email_id, '-FLAGS', '\\Seen') # Mark as unread
+                mail.store(latest_email_id, '-FLAGS', '\\Seen')
 
             list_emails.pop()
             # break

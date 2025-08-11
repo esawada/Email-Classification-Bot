@@ -1,5 +1,4 @@
 import os
-import re
 import tempfile
 from email import message
 from PIL import Image

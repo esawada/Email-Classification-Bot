@@ -1,2 +1,0 @@
-[console_scripts]
-email-bot = email_bot.main:main

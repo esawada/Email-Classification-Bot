@@ -1,0 +1,27 @@
+{
+    "email": {
+        "imap_host": "imap.gmail.com",
+        "imap_port": 993,
+        "username": "",
+        "password": ""
+    },
+    "database": {
+        "db_host": "localhost",
+        "db_name": "email_classifier",
+        "username": "root",
+        "password": ""
+    },
+    "classification": {
+        "keywords": 
+        ["payment due", "bill", "due date", "total amount",
+        "alert", "warning", "notice", "failed", 
+        "subscription", "renewal", "auto-renew",
+        "pagamento", "boleto", "vencimento"]
+        
+    },
+    "other_config": {
+        "check_interval_minutes": 5,
+        "mark_emails_as_readed": false,
+        "check_seen_emails": false
+    }
+}
