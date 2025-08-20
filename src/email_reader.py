@@ -2,11 +2,12 @@
 
 import imaplib
 import email
-from config import EMAIL_HOST, EMAIL_PORT, EMAIL_USERNAME, EMAIL_PASSWORD, MARK_EMAILS_AS_READED, CHECK_SEEN_EMAILS
+from config import EMAIL_HOST, EMAIL_PORT, EMAIL_USERNAME, EMAIL_PASSWORD, CHECK_EMAILS_SINCE_DAYS , MARK_EMAILS_AS_READED, CHECK_SEEN_EMAILS
 from email.header import decode_header
 from classifier import classify_email
 from decoder import process_attachments
 from database import save_email_record
+from datetime import datetime, timedelta
 from loguru import logger
 
 
@@ -17,11 +18,12 @@ def check_inbox_and_process_emails():
     with imaplib.IMAP4_SSL(EMAIL_HOST, EMAIL_PORT) as mail:
         mail.login(EMAIL_USERNAME, EMAIL_PASSWORD)
         mail.select("inbox")
+        cutoff_date = (datetime.now() - timedelta(days=CHECK_EMAILS_SINCE_DAYS)).strftime("%d-%b-%Y")
 
         if CHECK_SEEN_EMAILS:
-            status, messages = mail.search(None, 'ALL')
+            status, messages = mail.search(None, f'(ALL SINCE "{cutoff_date}")')
         else:
-            status, messages = mail.search(None, 'UNSEEN')
+            status, messages = mail.search(None, f'(UNSEEN SINCE "{cutoff_date}")')
         if status != 'OK':
             logger.error("Failed to search emails.")
             return

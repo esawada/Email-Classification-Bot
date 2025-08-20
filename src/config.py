@@ -31,6 +31,7 @@ DB_USERNAME = config["database"]["username"]
 DB_PASSWORD = config["database"]["password"]
 
 # Other config
+CHECK_EMAILS_SINCE_DAYS = config["other_config"]["check_emails_since_days"]
 CHECK_INTERVAL_MINUTES = config["other_config"]["check_interval_minutes"]
 CHECK_SEEN_EMAILS = config["other_config"]["check_seen_emails"]
 MARK_EMAILS_AS_READED = config["other_config"]["mark_emails_as_readed"]
@@ -53,6 +54,7 @@ KEYWORDS = config["classification"]["keywords"]
 # DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # # Other config
+# CHECK_EMAILS_SINCE_DAYS = int(os.getenv('CHECK_EMAILS_SINCE_DAYS', 7))
 # CHECK_INTERVAL_MINUTES = os.getenv('CHECK_INTERVAL_MINUTES', 5)
 # CHECK_SEEN_EMAILS = os.getenv('CHECK_SEEN_EMAILS', 'false').lower() == 'true'
 # MARK_EMAILS_AS_READED = os.getenv('MARK_EMAILS_AS_READED', 'false').lower() == 'true'

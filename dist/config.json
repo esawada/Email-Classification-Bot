@@ -20,6 +20,7 @@
         
     },
     "other_config": {
+        "check_emails_since_days": 7,
         "check_interval_minutes": 5,
         "mark_emails_as_readed": false,
         "check_seen_emails": false
